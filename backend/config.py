@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     db_path: str = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "phishguard.db"))
 
     # Score thresholds
-    threshold_safe: int = 40
-    threshold_suspicious: int = 70
+    threshold_safe: int = 35        # below this → safe  (was 40)
+    threshold_suspicious: int = 75  # above this → threat (was 70)
 
     # Feature flags
     use_sandbox: bool = False

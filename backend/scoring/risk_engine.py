@@ -15,13 +15,14 @@ WEIGHTS_EMAIL = {
     "Credential request":   0.16,
     "Brand impersonation":  0.13,
     "Sender authenticity":  0.16,
-    "Display-name spoof":   0.20,  # new high-weight signal
+    "Display-name spoof":   0.20,  # high-weight signal
     "Text quality":         0.04,
     "Link density":         0.08,
     "IP as hostname":       0.14,
     "Domain TLD":           0.07,
     "Subdomain depth":      0.05,
-    "Lookalike domain":     0.18,
+    "Lookalike domain":     0.22,  # raised from 0.18
+    "Homoglyph in sender":  0.24,  # new — Unicode confusable in sender addr
     "URL shortener":        0.07,
     "URL encoding":         0.04,
     "Path keywords":        0.06,
@@ -29,7 +30,7 @@ WEIGHTS_EMAIL = {
 
 WEIGHTS_URL = {
     "IP as hostname":    0.25,
-    "Lookalike domain":  0.25,
+    "Lookalike domain":  0.35,  # raised from 0.25 — strongest single URL signal
     "Domain TLD":        0.15,
     "URL shortener":     0.12,
     "Subdomain depth":   0.10,
@@ -59,6 +60,10 @@ CRITICAL_COMBOS = [
     ({"Lookalike domain", "Brand impersonation"}, 72),
     # Double extension + macros → at least 80
     ({"Double extension", "Office macros"}, 80),
+    # Lookalike domain + credential request → clear phishing attempt, at least 80
+    ({"Lookalike domain", "Credential request"}, 80),
+    # Homoglyph sender + brand impersonation → highly targeted attack, at least 85
+    ({"Homoglyph in sender", "Brand impersonation"}, 85),
 ]
 
 

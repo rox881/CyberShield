@@ -6,9 +6,12 @@ Optimizations over v1:
   - Extended urgency + credential patterns
   - Sender domain age proxy via pattern matching
   - Reduced false positives on legitimate transactional emails
+Optimizations over v2:
+  - Homoglyph / Unicode confusable detection in sender email address
 """
 import re
 from models.scan_models import SignalResult
+from engines.url_analyser import detect_homoglyphs
 
 URGENCY_PATTERNS = [
     r"urgent", r"immediately", r"within \d+ hours?", r"account.*suspended",
@@ -136,6 +139,31 @@ def analyse_content(text: str, sender: str = "", subject: str = "") -> list[Sign
         score=sender_score,
         severity="red" if sender_score > 50 else "yellow" if sender_score > 0 else "green",
         detail=sender_detail,
+    ))
+
+    # ── Homoglyph in sender email ─────────────────────────────────────────
+    # Detects Unicode confusable characters used in the sender address to
+    # visually impersonate a brand (e.g. suppоrt@paypal.com with Cyrillic о)
+    homoglyph_score = 0
+    homoglyph_detail = "No homoglyph characters detected in sender address"
+    if sender and "@" in sender:
+        sender_domain = sender.split("@")[-1]
+        hg_detected, hg_chars, _ = detect_homoglyphs(sender_domain)
+        if not hg_detected:
+            # Also check full address (username may contain confusables)
+            hg_detected, hg_chars, _ = detect_homoglyphs(sender)
+        if hg_detected:
+            homoglyph_score = 90
+            homoglyph_detail = (
+                f"Homoglyph character(s) in sender '{sender}': "
+                + ", ".join(hg_chars[:5])
+                + ("…" if len(hg_chars) > 5 else "")
+            )
+    signals.append(SignalResult(
+        name="Homoglyph in sender",
+        score=homoglyph_score,
+        severity="red" if homoglyph_score else "green",
+        detail=homoglyph_detail,
     ))
 
     # ── Display-name spoofing ─────────────────────────────────────────────
