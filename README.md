@@ -4,6 +4,10 @@
 
 Built for the AI/ML & Cybersecurity Hackathon.
 
+## Project Summary
+
+CyberShield is a comprehensive, AI-driven cybersecurity solution designed to detect and prevent phishing attacks in real-time. Operating fully locally to guarantee data privacy, it uses advanced large language models (Llama 3.1 8B and Phi-3 Mini) to run multi-signal heuristic analysis on emails, URLs, and file attachments. Integrated via a Chrome Extension and powered by a FastAPI backend, CyberShield immediately flags threats like credential harvesting, brand impersonation, urgency-based social engineering, and suspicious domains while providing detailed AI-generated explanations for every detection.
+
 ### Key Updates (v1.1)
 - Switched primary model to **Llama 3.1 8B** → significantly better reasoning and precision
 - Increased detection sensitivity (lower thresholds)
@@ -35,8 +39,12 @@ Built for the AI/ML & Cybersecurity Hackathon.
 ```bash
 ollama pull llama3.1:8b
 ollama pull phi3:mini
-2. Start the Backend
-Bashcd backend
+```
+
+### 2. Start the Backend
+
+```bash
+cd backend
 pip install -r requirements.txt
 
 # Copy environment file
@@ -49,42 +57,50 @@ cp ../.env.example ../.env
 
 mkdir -p ../data
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-3. Load the Chrome Extension
+```
 
-Go to chrome://extensions/
-Enable Developer mode
-Click Load unpacked → select the extension/ folder
+### 3. Load the Chrome Extension
 
-4. Open the Dashboard
-Open frontend/index.html in your browser (or click "Open Dashboard" in the extension popup).
+1. Go to `chrome://extensions/`
+2. Enable **Developer mode**
+3. Click **Load unpacked** → select the `extension/` folder
 
-Recommended Configuration (for higher phishing detection)
-In .env:
-envPRIMARY_MODEL=llama3.1:8b
+### 4. Open the Dashboard
+
+Open `frontend/index.html` in your browser (or click "Open Dashboard" in the extension popup).
+
+---
+
+## Recommended Configuration (for higher phishing detection)
+
+In `.env`:
+
+```env
+PRIMARY_MODEL=llama3.1:8b
 FAST_MODEL=phi3:mini
 
 # More sensitive detection
 THRESHOLD_SAFE=25
 THRESHOLD_SUSPICIOUS=55
+```
 
-Detection Signals
+## Detection Signals
 
-Urgency language
-Credential harvesting requests
-Brand impersonation
-Suspicious sender & lookalike domains
-IP addresses in URLs
-URL shorteners, encoding, suspicious paths
-Text quality anomalies
+- Urgency language
+- Credential harvesting requests
+- Brand impersonation
+- Suspicious sender & lookalike domains
+- IP addresses in URLs
+- URL shorteners, encoding, suspicious paths
+- Text quality anomalies
 
+## Tech Stack
 
-Tech Stack
+- **Backend:** FastAPI + Python 3.11
+- **AI:** Ollama (Llama 3.1 8B Instruct + Phi-3 Mini) — fully local
+- **Database:** SQLite
+- **Frontend:** Vanilla HTML/CSS/JS + Chart.js
+- **Extension:** Chrome Manifest V3
 
-Backend: FastAPI + Python 3.11
-AI: Ollama (Llama 3.1 8B Instruct + Phi-3 Mini) — fully local
-Database: SQLite
-Frontend: Vanilla HTML/CSS/JS + Chart.js
-Extension: Chrome Manifest V3
-
-
+---
 Made with ❤️ for better phishing protection.
